@@ -6,9 +6,10 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import Button from './src/components/Button';
+import Display from './src/components/Display';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,29 +22,43 @@ const styles = StyleSheet.create({
 });
 
 const App: () => React$Node = () => {
+  const [displayValue, setDisplayValue] = useState('0');
+
+  const updateDisplay = (n) => {
+    setDisplayValue(n);
+  };
+
+  const clearMemory = () => {
+    setDisplayValue('0');
+  };
+
+  const setOperation = (operation) => {
+
+  }
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Display value={displayValue} />
         <View style={styles.buttons}>
-          <Button label="AC" />
-          <Button label="/" />
-          <Button label="7" />
-          <Button label="8" />
-          <Button label="9" />
-          <Button label="*" />
-          <Button label="4" />
-          <Button label="5" />
-          <Button label="6" />
-          <Button label="-" />
-          <Button label="1" />
-          <Button label="2" />
-          <Button label="3" />
-          <Button label="+" />
-          <Button label="0" />
-          <Button label="." />
-          <Button label="=" />
+          <Button label="AC" triple onClick={clearMemory} />
+          <Button label="/" operation onClick={setOperation} />
+          <Button label="7" onClick={updateDisplay} />
+          <Button label="8" onClick={updateDisplay} />
+          <Button label="9" onClick={updateDisplay} />
+          <Button label="*" operation onClick={setOperation} />
+          <Button label="4" onClick={updateDisplay} />
+          <Button label="5" onClick={updateDisplay} />
+          <Button label="6" onClick={updateDisplay} />
+          <Button label="-" operation onClick={setOperation} />
+          <Button label="1" onClick={updateDisplay} />
+          <Button label="2" onClick={updateDisplay} />
+          <Button label="3" onClick={updateDisplay} />
+          <Button label="+" operation onClick={setOperation} />
+          <Button label="0" double onClick={updateDisplay} />
+          <Button label="." onClick={updateDisplay} />
+          <Button label="=" operation onClick={setOperation} />
         </View>
-      </SafeAreaView>
+      </View>
     </>
   );
 };
