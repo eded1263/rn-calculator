@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import Button from './src/components/Button';
 import Display from './src/components/Display';
@@ -21,20 +21,66 @@ const styles = StyleSheet.create({
   },
 });
 
-const App: () => React$Node = () => {
+const App = () => {
   const [displayValue, setDisplayValue] = useState('0');
+  const [clearDisplay, setClearDisplay] = useState(false);
+  const [operation, setOperationState] = useState(null);
+  const [values, setValues] = useState([0, 0]);
+  const [current, setCurrent] = useState(0);
+
+  const setDisplay = (value) => {
+    setDisplayValue(value);
+  };
 
   const updateDisplay = (n) => {
-    setDisplayValue(n);
+    if (n === '.' && displayValue.includes('.')) {
+      return;
+    }
+    const displayIsClear = displayValue === '0' || clearDisplay;
+    const currentValue = displayIsClear ? '' : displayValue;
+    const displayText = currentValue + n;
+    setDisplay(displayText);
+    setClearDisplay(false);
+    if (n !== '.') {
+      const newValue = parseFloat(displayText);
+      const valuesToSet = [...values];
+      valuesToSet[current] = newValue;
+      setValues(valuesToSet);
+    }
   };
 
   const clearMemory = () => {
     setDisplayValue('0');
+    setClearDisplay(false);
+    setOperationState(null);
+    setValues([0, 0]);
+    setCurrent(0);
   };
 
-  const setOperation = (operation) => {
+  const setOperation = (operationParam) => {
+    if (current === 0) {
+      setOperationState(operationParam);
+      setCurrent(1);
+      setClearDisplay(true);
+    } else {
+      const equals = operationParam === '=';
+      const valuesClone = [...values];
+      // console.warn(valuesClone);
 
-  }
+      try {
+        // eslint-disable-next-line no-eval
+        valuesClone[0] = eval(`${valuesClone[0]} ${operation} ${values[1]}`);
+      } catch (e) {
+        valuesClone[0] = values[0];
+      }
+
+      setDisplayValue(`${valuesClone[0]}`);
+      setOperationState(equals ? null : operationParam);
+      setCurrent(equals ? 0 : 1);
+      setClearDisplay(!equals);
+      setValues(valuesClone);
+    }
+  };
   return (
     <>
       <View style={styles.container}>
